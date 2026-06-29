@@ -6,20 +6,24 @@ using UnityEngine.InputSystem;
 
 public class Player : Singleton<Player>
 {
+    [Header("Inventory")]
+    public int keyCount = 0;
+
+
     private CharacterController previousCharController;
     public CharacterController CurrentController;
     public PlayerControls playerControls;
-    
+
     private Rigidbody rb;
     public List<CharacterController> AllCharacterControllers = new List<CharacterController>();
     public bool playingAsJuniper = true;
     //I want each player instance to have a perspective that way i can record with june and do somehting with nat
-    public enum CameraType 
+    public enum CameraType
     {
         ThirdPerson,
         FirstPerson
     }
-    
+
 
 
     [HideInInspector]
@@ -56,7 +60,7 @@ public class Player : Singleton<Player>
     }
     private void updateCharacterController()
     {
-        
+
         rb = CurrentController.GetComponentInChildren<Rigidbody>();
         CurrentController.GetComponent<PlayerMovement>().enabled = true;
         foreach (CharacterController charController in AllCharacterControllers)
@@ -69,9 +73,10 @@ public class Player : Singleton<Player>
         if (CurrentController.gameObject.name == "Juniper")
         {
             playingAsJuniper = true;
-        } else
+        }
+        else
         {
-            playingAsJuniper= false;
+            playingAsJuniper = false;
         }
     }
 
@@ -107,11 +112,12 @@ public class Player : Singleton<Player>
         if (AllCharacterControllers.IndexOf(CurrentController) + 1 >= AllCharacterControllers.Count)
         {
             CurrentController = AllCharacterControllers[0];
-        } else
+        }
+        else
         {
             CurrentController = AllCharacterControllers[AllCharacterControllers.IndexOf(CurrentController) + 1];
         }
-        
+
 
         updateCharacterController();
     }
@@ -135,5 +141,25 @@ public class Player : Singleton<Player>
         CurrentController.enabled = false;
         transform.DORotate(new Vector3(transform.eulerAngles.x, angle, transform.eulerAngles.z), 0.0f);
         CurrentController.enabled = true;
+    }
+
+
+    public void AddKey(int amount = 1)
+    {
+        keyCount += amount;
+        Debug.Log("Keys: " + keyCount);
+    }
+
+    public bool UseKey()
+    {
+        if (keyCount <= 0)
+        {
+            Debug.Log("No keys available.");
+            return false;
+        }
+
+        keyCount--;
+        Debug.Log("Used key. Keys left: " + keyCount);
+        return true;
     }
 }
